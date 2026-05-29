@@ -38,6 +38,10 @@
 #include "indicatorhelper.h"
 #include "openconfig.h"
 
+#ifdef Q_OS_MACOS
+#include "macos/nowplayingcontroller.h"
+#endif
+
 int main(int argc, char **argv)
 {
 #ifdef Q_OS_WIN
@@ -181,6 +185,10 @@ int main(int argc, char **argv)
 #endif
 
     refreshMenu();
+
+#ifdef Q_OS_MACOS
+    NowPlayingController nowPlayingController(&model);
+#endif
 
     app.setQuitOnLastWindowClosed(false);
 

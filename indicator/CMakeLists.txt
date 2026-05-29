@@ -24,7 +24,12 @@ ecm_add_app_icon(indicator_SRCS ICONS
 if (WIN32)
     list(APPEND indicator_SRCS indicatorhelper_win.cpp)
 elseif (APPLE)
-    list(APPEND indicator_SRCS indicatorhelper_mac.cpp serviceregister_mac.mm)
+    list(APPEND indicator_SRCS
+        indicatorhelper_mac.cpp
+        serviceregister_mac.mm
+        macos/nowplayingbridge.mm
+        macos/nowplayingcontroller.cpp
+    )
 else ()
     list(APPEND indicator_SRCS indicatorhelper.cpp)
 endif()
@@ -48,8 +53,9 @@ else()
 endif()
 
 if (APPLE)
+target_include_directories(kdeconnect-indicator PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/macos)
 # Apple frameworks
-target_link_libraries(kdeconnect-indicator "-framework AppKit")
+target_link_libraries(kdeconnect-indicator "-framework AppKit" "-framework MediaPlayer" "-framework Foundation")
 # Apple app package
 set_target_properties(kdeconnect-indicator PROPERTIES
     OUTPUT_NAME "KDE Connect"
