@@ -10,7 +10,9 @@
 #include <QDebug>
 #include <QProcess>
 
+#ifdef HAVE_KIO
 #include <KIO/CommandLauncherJob>
+#endif
 
 void OpenConfig::setXdgActivationToken(const QString &token)
 {
@@ -37,13 +39,15 @@ void OpenConfig::openConfiguration(const QString &deviceId, const QString &plugi
     QProcess::startDetached(QStringLiteral("kdeconnect-app.exe"), args);
 #elif defined(Q_OS_MAC)
     QProcess::startDetached(QCoreApplication::applicationDirPath() + QLatin1String("/kdeconnect-app"), args);
-#else
+#elif defined(HAVE_KIO)
     auto job = new KIO::CommandLauncherJob(QStringLiteral("kdeconnect-app"), args);
     job->setDesktopName(QStringLiteral("org.kde.kdeconnect.app"));
     job->setStartupId(m_currentToken.toUtf8());
     job->start();
 
     m_currentToken = QString();
+#else
+    QProcess::startDetached(QStringLiteral("kdeconnect-app"), args);
 #endif
 }
 

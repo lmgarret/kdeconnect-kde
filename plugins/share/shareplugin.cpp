@@ -16,9 +16,11 @@
 #include <QTemporaryFile>
 
 #include <KApplicationTrader>
+#ifdef HAVE_KIO
 #include <KIO/Job>
 #include <KIO/MkpathJob>
 #include <KIO/OpenUrlJob>
+#endif
 #include <KJobTrackerInterface>
 #include <KLocalizedString>
 #include <KNotification>
@@ -46,11 +48,17 @@ QUrl SharePlugin::destinationDir() const
         dir.setPath(dir.path().arg(device()->name()));
     }
 
+#ifdef HAVE_KIO
     KJob *job = KIO::mkpath(dir);
     bool ret = job->exec();
     if (!ret) {
         qWarning() << "couldn't create" << dir;
     }
+#else
+    if (!QDir().mkpath(dir.toLocalFile())) {
+        qWarning() << "couldn't create" << dir;
+    }
+#endif
 
     return dir;
 }
@@ -184,17 +192,26 @@ void SharePlugin::receivePacket(const NetworkPacket &np)
                 tmpFile.close();
 
                 const QString fileName = tmpFile.fileName();
+#ifdef HAVE_KIO
                 auto *job = new KIO::OpenUrlJob(QUrl::fromLocalFile(fileName), QStringLiteral("text/plain"));
                 job->setStartupId(notif->xdgActivationToken().toUtf8());
                 job->start();
+#else
+                QDesktopServices::openUrl(QUrl::fromLocalFile(fileName));
+#endif
                 Q_EMIT shareReceived(fileName);
             }
         };
 
         auto openUrl = [this, url, notif] {
+#ifdef HAVE_KIO
             auto *job = new KIO::OpenUrlJob(url);
             job->setStartupId(notif->xdgActivationToken().toUtf8());
             job->start();
+#else
+            Q_UNUSED(notif);
+            QDesktopServices::openUrl(url);
+#endif
             Q_EMIT shareReceived(url.toString());
         };
 

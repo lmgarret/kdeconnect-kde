@@ -17,11 +17,12 @@ target_link_libraries(kdeconnect-handler
     KF6::ColorScheme
     KF6::DBusAddons
     KF6::I18n
-    KF6::KIOCore
-    KF6::KIOFileWidgets
-    KF6::KIOWidgets
     KF6::Crash
 )
+
+if(HAVE_KIO)
+    target_link_libraries(kdeconnect-handler KF6::KIOCore KF6::KIOFileWidgets KF6::KIOWidgets)
+endif()
 
 set_target_properties(kdeconnect-handler PROPERTIES MACOSX_BUNDLE FALSE)
 install(TARGETS kdeconnect-handler ${KDECONNECT_INSTALL_TARGETS_DEFAULT_ARGS})

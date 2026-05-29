@@ -127,7 +127,14 @@ if (Qt6Gui_VERSION VERSION_GREATER_EQUAL "6.10.0")
 endif()
 
 find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS I18n DBusAddons IconThemes Notifications
-    KIO ColorScheme Service Solid Kirigami People WindowSystem GuiAddons Crash ItemModels WidgetsAddons)
+    ColorScheme Service Solid Kirigami People WindowSystem GuiAddons Crash ItemModels WidgetsAddons)
+
+if(NOT APPLE)
+    find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS KIO)
+    set(HAVE_KIO TRUE)
+else()
+    set(HAVE_KIO FALSE)
+endif()
 
 if (WIN32)
     get_filename_component(WINDOWS_KITS_DIR
@@ -155,7 +162,9 @@ add_subdirectory(app)
 add_subdirectory(indicator)
 add_subdirectory(urlhandler)
 add_subdirectory(nautilus-extension)
-add_subdirectory(fileitemactionplugin)
+if(NOT APPLE)
+    add_subdirectory(fileitemactionplugin)
+endif()
 add_subdirectory(smsapp)
 
 if(NOT WIN32 AND NOT APPLE)

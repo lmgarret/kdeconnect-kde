@@ -9,7 +9,6 @@ target_link_libraries(kdeconnectd
     kdeconnectcore
     kdeconnectversion
     KF6::ColorScheme
-    KF6::KIOWidgets
     KF6::DBusAddons
     KF6::Notifications
     KF6::I18n
@@ -17,6 +16,10 @@ target_link_libraries(kdeconnectd
     KF6::Crash
     Qt::QuickControls2
     Qt::Widgets)
+
+if(HAVE_KIO)
+    target_link_libraries(kdeconnectd KF6::KIOWidgets)
+endif()
 
 ecm_mark_nongui_executable(kdeconnectd)
 

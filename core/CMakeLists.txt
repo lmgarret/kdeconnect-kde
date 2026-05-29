@@ -51,15 +51,19 @@ find_package(OpenSSL REQUIRED COMPONENTS Crypto)
 target_link_libraries(kdeconnectcore
 PUBLIC
     Qt::Network
+    Qt::Gui
     KF6::CoreAddons
-    KF6::KIOCore
-    KF6::KIOGui
     OpenSSL::Crypto
 PRIVATE
     Qt::DBus
     KF6::I18n
     KF6::ConfigCore
 )
+
+if(HAVE_KIO)
+    target_link_libraries(kdeconnectcore PUBLIC KF6::KIOCore KF6::KIOGui)
+    target_compile_definitions(kdeconnectcore PUBLIC -DHAVE_KIO)
+endif()
 
 if(WIN32)
     target_link_libraries(kdeconnectcore PRIVATE ws2_32.lib) # winsock2

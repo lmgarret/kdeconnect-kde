@@ -8,7 +8,6 @@ set(kdeconnect_libraries
     kdeconnectversion
     KF6::GuiAddons
     KF6::I18n
-    KF6::KIOWidgets
     KF6::Notifications
     Qt::DBus
     Qt::Network
@@ -16,6 +15,10 @@ set(kdeconnect_libraries
     Qt::Qml
     Qt::Test
 )
+
+if(HAVE_KIO)
+    list(APPEND kdeconnect_libraries KF6::KIOWidgets)
+endif()
 
 ecm_add_test(notificationstest.cpp LINK_LIBRARIES ${kdeconnect_libraries})
 ecm_add_test(pluginloadtest.cpp LINK_LIBRARIES ${kdeconnect_libraries})

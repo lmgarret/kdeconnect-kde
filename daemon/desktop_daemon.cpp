@@ -12,8 +12,10 @@
 #include <QTimer>
 
 #include <KDBusService>
+#ifdef HAVE_KIO
 #include <KIO/Global>
 #include <KIO/JobTracker>
+#endif
 #include <KLocalizedString>
 #include <KNotification>
 
@@ -62,7 +64,11 @@ void DesktopDaemon::reportError(const QString &title, const QString &text)
 
 KJobTrackerInterface *DesktopDaemon::jobTracker()
 {
+#ifdef HAVE_KIO
     return KIO::getJobTracker();
+#else
+    return nullptr;
+#endif
 }
 
 // NOTE: eventId must match a notificatiion event id defined in plugins/kdeconnect.notifyrc

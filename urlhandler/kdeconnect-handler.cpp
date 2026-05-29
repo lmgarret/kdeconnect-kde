@@ -25,7 +25,11 @@
 #include <KCrash>
 #include <KDBusService>
 #include <KLocalizedString>
+#ifdef HAVE_KIO
 #include <KUrlRequester>
+#else
+#include <QLineEdit>
+#endif
 
 #include <dbushelper.h>
 
@@ -137,11 +141,19 @@ int main(int argc, char **argv)
         });
     }
 
+#ifdef HAVE_KIO
     KUrlRequester *urlRequester;
+#else
+    QLineEdit *urlRequester;
+#endif
 
     if (mode == HandlerMode::UserInput) {
+#ifdef HAVE_KIO
         urlRequester = new KUrlRequester(&dialog);
         urlRequester->setStartDir(QUrl::fromLocalFile(QDir::homePath()));
+#else
+        urlRequester = new QLineEdit(&dialog);
+#endif
         urlRequester->setFocus();
         uidialog.urlPickerLayout->addWidget(urlRequester);
         urlRequester->setPlaceholderText(i18nc("Placeholder for input field that should contain a file/URL to share", "Local file or web URL"));
@@ -176,7 +188,11 @@ int main(int argc, char **argv)
     }
 
     if (mode == HandlerMode::UserInput) {
+#ifdef HAVE_KIO
         toSend.append(urlRequester->url());
+#else
+        toSend.append(QUrl::fromUserInput(urlRequester->text(), QDir::homePath(), QUrl::AssumeLocalFile));
+#endif
     }
 
     QString failed;
